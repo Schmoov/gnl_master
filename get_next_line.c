@@ -6,15 +6,11 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 12:39:12 by parden            #+#    #+#             */
-/*   Updated: 2024/06/07 19:40:01 by parden           ###   ########.fr       */
+/*   Updated: 2024/06/07 19:45:58 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-# define BUFFER_SIZE 1024
-# define FD_MAX 1024
+#include "get_next_line.h"
 
 size_t	append_line(char *line, char *buf, size_t cap)
 {
