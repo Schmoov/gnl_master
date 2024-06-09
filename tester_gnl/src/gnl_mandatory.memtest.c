@@ -62,9 +62,40 @@ Test(gnl_mandatory, normal_text)
 	free(line);
 
 	line = get_next_line(fd);
-	puts(line);
-	free(line);
-	//cr_expect_null(line);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
+	line = get_next_line(fd);
+	cr_expect_null(line);
 
 	close(fd);
 }

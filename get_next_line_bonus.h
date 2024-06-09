@@ -6,11 +6,12 @@
 # include <fcntl.h>
 
 # ifndef FD_MAX
-#  define FD_MAX 16
+#  define FD_MAX 2048
 # endif
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1024
 # endif
+
 char	*get_next_line(int fd);
 #endif
