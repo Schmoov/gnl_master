@@ -3,7 +3,25 @@
 #include <fcntl.h>
 #include "../get_next_line.h"
 
-Test(gnl_mandatory, basic_text)
+Test(gnl_mandatory, single_line_text)
+{
+	int fd = open("txt/bonjour.txt", O_RDONLY);
+	char *line;
+
+	line = get_next_line(fd);
+	cr_expect_str_eq(line, "bonjour\n");
+	free(line);
+
+	line = get_next_line(fd);
+	cr_expect_null(line);
+
+	line = get_next_line(fd);
+	cr_expect_null(line);
+
+	close(fd);
+}
+
+Test(gnl_mandatory, normal_text)
 {
 	int fd = open("txt/manifesto.txt", O_RDONLY);
 	char *line;
@@ -44,18 +62,9 @@ Test(gnl_mandatory, basic_text)
 	free(line);
 
 	line = get_next_line(fd);
-	printf("\n%s\n",line);
+	puts(line);
 	free(line);
-	line = get_next_line(fd);
-	printf("\n%s\n",line);
-	free(line);
-	line = get_next_line(fd);
-	printf("\n%s\n",line);
-	free(line);
-	line = get_next_line(fd);
-	printf("\n%s\n",line);
-	free(line);
-//	cr_expect_null(line);
+	//cr_expect_null(line);
 
 	close(fd);
 }

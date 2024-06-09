@@ -26,14 +26,13 @@ ASAN_ENV := ASAN_OPTIONS=log_path=$(LOG_DIR):abort_on_error=1:allocator_may_retu
 
 all: test
 
-test: $(TSTS)
+test: $(OBJS) $(GNL_MOBJS) $(GNL_BOBJS) $(TSTS) 
 
-
-$(BIN_DIR)%_mandatory.memtest.o: $(SRC_DIR)%_mandatory.memtest.c 
+$(BIN_DIR)%_mandatory.memtest.o: $(SRC_DIR)%_mandatory.memtest.c $(GNL_MOBJS)
 	@ mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $(ASAN) -I ./ -c $< -o $@
 
-$(BIN_DIR)%_bonus.memtest.o: $(SRC_DIR)%_bonus.memtest.c 
+$(BIN_DIR)%_bonus.memtest.o: $(SRC_DIR)%_bonus.memtest.c $(GNL_BOBJS)
 	@ mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $(ASAN) -I ./ -c $< -o $@
 
