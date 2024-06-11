@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 12:39:12 by parden            #+#    #+#             */
-/*   Updated: 2024/06/11 13:25:15 by parden           ###   ########.fr       */
+/*   Updated: 2024/06/11 13:30:56 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	my_realloc(char **line, size_t *size_line, size_t len_line)
 	*line = res;
 }
 
-char	*populate_line(int *len_line, char *buffer)
+char	*populate_line(size_t *len_line, char *buffer, int fd)
 {
 	char		*line;
 	size_t		size_line;
@@ -67,11 +67,11 @@ char	*populate_line(int *len_line, char *buffer)
 	while (1)
 	{
 		if (*len_line + 1 + BUFFER_SIZE > size_line)
-			my_realloc(&line, &size_line, len_line);
+			my_realloc(&line, &size_line, *len_line);
 		if (!line)
 			return (NULL);
 		*len_line += unload_buffer(line, buffer);
-		if (len_line && line[len_line - 1] == '\n')
+		if (len_line && line[*len_line - 1] == '\n')
 			return (line);
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (!bytes_read)
@@ -95,7 +95,7 @@ char	*get_next_line(int fd)
 	if (fd < 0 || fd >= FD_MAX)
 		return (NULL);
 	len_line = 0;
-	line = populate_line(stash[fd], &len_line, &size_line);
+	line = populate_line(&len_line, stash[fd], fd);
 	if (!line || !len_line)
 		return (free(line),NULL);
 	line[len_line] = 0;
