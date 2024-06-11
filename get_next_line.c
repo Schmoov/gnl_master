@@ -6,31 +6,44 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 12:39:12 by parden            #+#    #+#             */
-/*   Updated: 2024/06/09 17:43:42 by parden           ###   ########.fr       */
+/*   Updated: 2024/06/11 14:05:50 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-size_t	append_line(char *line, char *buf, size_t cap)
+size_t	unload_buffer(char *line, char *buf)
 {
 	size_t	i;
+	size_t	end;
 
+	end = 0;
 	i = 0;
-	while (i < cap)
+	while (end < BUFFER_SIZE && buf[end] && (!end || buf[end - 1] != '\n'))
+		end++;
+	while (i < BUFFER_SIZE)
 	{
-		line[i] = buf[i];
+		if (i < end)
+			line[i] = buf[i];
+		if (i + end < BUFFER_SIZE)
+			buf[i] = buf[i + end];
+		else
+			buf[i] = 0;
 		i++;
-		if (buf[i - 1] == '\n')
-			break;
 	}
-	return (i);
+	return (end);
 }
 
 void	my_realloc(char **line, size_t *size_line, size_t len_line)
 {
 	char *res;
 
+	if (!*size_line)
+	{
+		*line = malloc(BUFFER_SIZE + 1);
+		*size_line = BUFFER_SIZE + 1;
+		return ;
+	}
 	res = malloc(*size_line * 2);
 	if (!res)
 	{
@@ -44,64 +57,32 @@ void	my_realloc(char **line, size_t *size_line, size_t len_line)
 	*line = res;
 }
 
-void	save_stash(char *stash, char *buf, int bytes_read)
+char	*populate_line(size_t *len_line, char *buffer, int fd)
 {
-	int		i;
-	int		j;
+	char		*line;
+	size_t		size_line;
+	int			bytes_read;
 
-	i = 0;
-	j = 0;
-	while (i < bytes_read && buf[i] != '\n')
-		i++;
-	i++;
-	while (i < bytes_read)
-	{
-		stash[j] = buf[i];
-		i++;
-		j++;
-	}
-	while (j < BUFFER_SIZE)
-	{
-		stash[j] = 0;
-		j++;
-	}
-}
-
-void	get_line_from_fd(char **line, size_t *len_line, char *stash, int fd)
-{
-	char	buf[BUFFER_SIZE];
-	int		bytes_read;
-	size_t	size_line;
-
-	bytes_read = BUFFER_SIZE;
-	size_line = BUFFER_SIZE + 1;
-
-	while ((!*len_line || (*line)[*len_line - 1] != '\n') && bytes_read == BUFFER_SIZE)
+	size_line = 0;
+	while (1)
 	{
 		if (*len_line + 1 + BUFFER_SIZE > size_line)
-			my_realloc(line, &size_line, *len_line);
-		if (!*line)
+			my_realloc(&line, &size_line, *len_line);
+		if (!line)
+			return (NULL);
+		*len_line += unload_buffer(line + *len_line, buffer);
+		if (*len_line && line[*len_line - 1] == '\n')
+			return (line);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (!bytes_read)
+			return (line);
+		if (bytes_read == -1)
 		{
-			*len_line = 0;
-			return ;
+			memset(buffer, 0, BUFFER_SIZE);
+			free(line);
+			return (NULL);
 		}
-		bytes_read = read(fd, buf, BUFFER_SIZE);
-		if (bytes_read != -1)
-			*len_line += append_line(*line + *len_line, buf, bytes_read);
 	}
-	if (bytes_read == -1)
-		*len_line = 0;
-	save_stash(stash, buf, bytes_read);
-}
-
-size_t	fill_from_stash(char *line, char *stash)
-{
-	size_t	len_line;
-
-	len_line = append_line(line, stash, strlen(stash));
-	memmove(stash, stash + len_line, BUFFER_SIZE - len_line);
-	memset(stash + BUFFER_SIZE - len_line, 0, len_line);
-	return (len_line);
 }
 
 char	*get_next_line(int fd)
@@ -113,17 +94,10 @@ char	*get_next_line(int fd)
 
 	if (fd < 0)
 		return (NULL);
-	line = malloc(BUFFER_SIZE + 1);
-	if (!line)
-		return (NULL);
-	len_line = fill_from_stash(line, stash);
-	if (!len_line || line[len_line - 1] != '\n')
-		get_line_from_fd(&line, &len_line, stash, fd);
-	if (!len_line)
-	{
-		free(line);
-		return (NULL);
-	}
+	len_line = 0;
+	line = populate_line(&len_line, stash, fd);
+	if (!line || !len_line)
+		return (free(line),NULL);
 	line[len_line] = 0;
 	res = strdup(line);
 	free(line);

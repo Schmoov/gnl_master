@@ -6,7 +6,7 @@
 # include <fcntl.h>
 
 # ifndef FD_MAX
-#  define FD_MAX 2048
+#  define FD_MAX 1001
 # endif
 
 # ifndef BUFFER_SIZE
