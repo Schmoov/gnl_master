@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 12:39:12 by parden            #+#    #+#             */
-/*   Updated: 2024/06/11 13:30:56 by parden           ###   ########.fr       */
+/*   Updated: 2024/06/11 14:02:50 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ char	*populate_line(size_t *len_line, char *buffer, int fd)
 			my_realloc(&line, &size_line, *len_line);
 		if (!line)
 			return (NULL);
-		*len_line += unload_buffer(line, buffer);
-		if (len_line && line[*len_line - 1] == '\n')
+		*len_line += unload_buffer(line + *len_line, buffer);
+		if (*len_line && line[*len_line - 1] == '\n')
 			return (line);
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (!bytes_read)
