@@ -6,7 +6,7 @@
 /*   By: parden <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 12:39:12 by parden            #+#    #+#             */
-/*   Updated: 2024/06/11 14:02:50 by parden           ###   ########.fr       */
+/*   Updated: 2024/06/11 17:32:10 by parden           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ size_t	unload_buffer(char *line, char *buf)
 
 void	my_realloc(char **line, size_t *size_line, size_t len_line)
 {
-	char *res;
+	char	*res;
 
 	if (!*size_line)
 	{
@@ -51,7 +51,7 @@ void	my_realloc(char **line, size_t *size_line, size_t len_line)
 		*line = NULL;
 		return ;
 	}
-	memcpy(res, *line, len_line);
+	my_memcpy(res, *line, len_line);
 	free(*line);
 	*size_line *= 2;
 	*line = res;
@@ -78,7 +78,7 @@ char	*populate_line(size_t *len_line, char *buffer, int fd)
 			return (line);
 		if (bytes_read == -1)
 		{
-			memset(buffer, 0, BUFFER_SIZE);
+			my_memset(buffer, 0, BUFFER_SIZE);
 			free(line);
 			return (NULL);
 		}
@@ -97,9 +97,9 @@ char	*get_next_line(int fd)
 	len_line = 0;
 	line = populate_line(&len_line, stash[fd], fd);
 	if (!line || !len_line)
-		return (free(line),NULL);
+		return (free(line), NULL);
 	line[len_line] = 0;
-	res = strdup(line);
+	res = my_strdup(line);
 	free(line);
 	return (res);
 }
